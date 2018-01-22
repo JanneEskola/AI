@@ -87,43 +87,37 @@ def depthFirstSearch(problem):
 	print "Start's successors:", problem.getSuccessors(problem.getStartState())
 	"""
 	"*** YOUR CODE HERE ***"
-	from game import Directions
-	s = Directions.SOUTH
-	w = Directions.WEST
-	n = Directions.NORTH
-	e = Directions.EAST
-	n = -2
-	
 	ban = []
+	sol = []
 	stack = util.Stack()
+	sol = []
 	state = problem.getStartState()
-	if state == problem.isGoalState:
-		return ban
+	ban.append(state)
+	if problem.getSuccessors(state) == None:
+		return 0
 	else:
-		ban.append(state)
-		if problem.getSuccessors(state) == None:
-			return 0
-		else:
-			while(1):
-				for x in problem.getSuccessors(state):
-					if x[0] in ban:
-						pass	
+		while(1):
+			y = len(problem.getSuccessors(state))
+			for x in problem.getSuccessors(state):
+				if x[0] in ban:
+					y -= 1
+					if y == 0:
+						stack.pop()
+						help = stack.pop()
+						sol.pop()
+						state = help[0]
+						stack.push(help)
+				else:
+					stack.push(x)
+					sol.append(x[1])
+					if problem.isGoalState(x[0]) == True:
+						print sol
+						return sol
 					else:
-						util.Stack.push(stack, x[1][0])
-						if problem.isGoalState(x[0]) == True:
-							return stack
-						else:
-							state = x[0]
-							ban.append(state)			
-				util.Stack.pop(stack)
-				y = ban[n]
-				while state == y:
-					n -= 1
-					y = ban[n]
-				state = y
-				n = -2
-					
-							
+						state = x[0]
+						ban.append(state)
+					break
+
 	util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
