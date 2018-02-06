@@ -148,7 +148,42 @@ def breadthFirstSearch(problem):
 
 def uniformCostSearch(problem):
 	"""Search the node of least total cost first."""
-	"*** YOUR CODE HERE ***"
+	queue = util.PriorityQueue()
+	ban = set()
+	meta = {}
+	queue.push(problem.getStartState(), 1)
+	meta[problem.getStartState()] = ()
+	while queue:
+		state = queue.pop()
+		if problem.isGoalState(state):
+			sol = []
+			while (1):
+				row = meta[state]
+				if len(row) == 3:
+					state = row[0]
+					sol.append(row[1])
+				else:
+					break
+			return list(reversed(sol))
+		for child in problem.getSuccessors(state):
+			if child[0] in ban:
+				continue
+			row = meta[state]
+			if child[0] in meta:
+				if meta[child[0]][2] < (row[2] + child[2]):
+					break
+				else:
+					meta[child[0]] = (state, child[1], (child[2] + row[2]))
+					queue.update(child[0], child[2] + row[2])
+			else:
+				if len(row) == 3:
+					meta[child[0]] = (state, child[1], child[2] + row[2])
+					queue.update(child[0], child[2] + row[2])
+				else:
+					meta[child[0]] = (state, child[1], child[2])
+					queue.update(child[0], child[2])	
+		ban.add(state)
+
 	util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -160,7 +195,42 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
 	"""Search the node that has the lowest combined cost and heuristic first."""
-	"*** YOUR CODE HERE ***"
+	queue = util.PriorityQueueWithFunction(nullHeuristic)
+	ban = set()
+	meta = {}
+	queue.push(problem.getStartState())
+	meta[problem.getStartState()] = ()
+	while queue:
+		state = queue.pop()
+		if problem.isGoalState(state):
+			sol = []
+			while (1):
+				row = meta[state]
+				if len(row) == 3:
+					state = row[0]
+					sol.append(row[1])
+				else:
+					break
+			return list(reversed(sol))
+		for child in problem.getSuccessors(state):
+			if child[0] in ban:
+				continue
+			row = meta[state]
+			if child[0] in meta:
+				if meta[child[0]][2] < (row[2] + child[2]):
+					break
+				else:
+					meta[child[0]] = (state, child[1], child[2] + row[2] + nullHeuristic(state))
+					queue.update(child[0], child[2] + row[2] + nullHeuristic(state))
+			else:
+				if len(row) == 3:
+					meta[child[0]] = (state, child[1], child[2] + row[2] + nullHeuristic(state))
+					queue.update(child[0], child[2] + row[2] + nullHeuristic(state))
+				else:
+					meta[child[0]] = (state, child[1], child[2])
+					queue.update(child[0], child[2])	
+		ban.add(state)
+
 	util.raiseNotDefined()
 
 
