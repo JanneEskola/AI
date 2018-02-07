@@ -195,10 +195,10 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
 	"""Search the node that has the lowest combined cost and heuristic first."""
-	queue = util.PriorityQueueWithFunction(nullHeuristic)
+	queue = util.PriorityQueue()
 	ban = set()
 	meta = {}
-	queue.push(problem.getStartState())
+	queue.push(problem.getStartState(), 0)
 	meta[problem.getStartState()] = ()
 	while queue:
 		state = queue.pop()
@@ -217,18 +217,18 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 				continue
 			row = meta[state]
 			if child[0] in meta:
-				if meta[child[0]][2] < (row[2] + child[2]):
-					break
+				if meta[child[0]][2] < (row[2] + child[2] + heuristic(child[0], problem)):
+					continue
 				else:
-					meta[child[0]] = (state, child[1], child[2] + row[2] + nullHeuristic(state))
-					queue.update(child[0], child[2] + row[2] + nullHeuristic(state))
+					meta[child[0]] = (state, child[1], child[2] + row[2] + heuristic(child[0], problem))
+					queue.update(child[0], child[2] + row[2] + heuristic(child[0], problem))
 			else:
 				if len(row) == 3:
-					meta[child[0]] = (state, child[1], child[2] + row[2] + nullHeuristic(state))
-					queue.update(child[0], child[2] + row[2] + nullHeuristic(state))
+					meta[child[0]] = (state, child[1], child[2] + row[2] + heuristic(child[0], problem))
+					queue.update(child[0], child[2] + row[2] + heuristic(child[0], problem))
 				else:
-					meta[child[0]] = (state, child[1], child[2])
-					queue.update(child[0], child[2])	
+					meta[child[0]] = (state, child[1], child[2] + heuristic(child[0], problem))
+					queue.update(child[0], child[2] + heuristic(child[0], problem))	
 		ban.add(state)
 
 	util.raiseNotDefined()
