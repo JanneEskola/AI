@@ -86,34 +86,29 @@ def depthFirstSearch(problem):
 	print "Is the start a goal?", problem.isGoalState(problem.getStartState())
 	print "Start's successors:", problem.getSuccessors(problem.getStartState())
 	"""
-	ban = []
-	sol = []
+	ban = set()
 	stack = util.Stack()
-	state = problem.getStartState()
-	ban.append(state)
-	if problem.getSuccessors(state) == None:
-		return 0
-	else:
-		while(1):
-			y = len(problem.getSuccessors(state))
-			for x in problem.getSuccessors(state):
-				if x[0] in ban:
-					y -= 1
-					if y == 0:
-						stack.pop()
-						help = stack.pop()
-						sol.pop()
-						state = help[0]
-						stack.push(help)
+	meta = {}
+	stack.push(problem.getStartState())
+	meta[problem.getStartState()] = ()
+	while not stack.isEmpty():
+		state = stack.pop()
+		if problem.isGoalState(state):
+			sol = []
+			while (1):
+				row = meta[state]
+				if len(row) == 2:
+					state = row[0]
+					sol.append(row[1])
 				else:
-					stack.push(x)
-					sol.append(x[1])
-					if problem.isGoalState(x[0]) == True:
-						return sol
-					else:
-						state = x[0]
-						ban.append(state)
 					break
+			return list(reversed(sol))
+		for child in problem.getSuccessors(state):
+			if child[0] in ban:
+				continue
+			meta[child[0]] = (state, child[1])
+			stack.push(child[0])
+		ban.add(state)
 
 	util.raiseNotDefined()
 
